@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "target" : "es6",
+    "module" : "amd",
+    "removeComments" : true,
+    "preserveConstEnums" : true,
+    "outFile" : "./js/all.js",
+    "rootDir" : "./scripts/",
+    "sourceMap" : true,
+    "sourceRoot": ""
+  }
+}
