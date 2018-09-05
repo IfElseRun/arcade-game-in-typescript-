@@ -76,5 +76,51 @@ namespace udacity.entities {
     public willBeOutOfBounds(pos: udacity.entities.position): boolean {
       return this.x + pos.x >= this.boundary.x || this.y + pos.y >= this.boundary.y;
     }
+
+    public topLeft(): position {
+      return this;
+    }
+
+    public topRight(): position {
+      return new position(this.x + this.positionBuffer, this.y);
+    }
+
+    public bottomLeft(): position {
+      return new position(this.x, this.y + this.positionBuffer);
+    }
+
+    public bottomRight(): position {
+      return new position(this.x + this.positionBuffer, this.y + this.positionBuffer);
+    }
+
+    public inCollision(other: actorPosition): boolean {
+      return (
+        (
+          this.topLeft().x < other.topLeft().x &&
+          this.topLeft().y < other.topLeft().y
+          && 
+          this.bottomRight().x > other.topLeft().x &&
+          this.bottomRight().y > other.topLeft().y
+        ) || (
+          this.topRight().x > other.topRight().x &&
+          this.topRight().y < other.topRight().y
+          && 
+          this.bottomLeft().x < other.topRight().x &&
+          this.bottomLeft().y > other.topRight().y
+        ) || (
+          this.bottomLeft().x < other.bottomLeft().x &&
+          this.bottomLeft().y > other.bottomLeft().y
+          && 
+          this.topRight().x > other.bottomLeft().x &&
+          this.topRight().y < other.bottomLeft().y
+        ) || (
+          this.bottomRight().x > other.bottomRight().x &&
+          this.bottomRight().y > other.bottomRight().y
+          && 
+          this.topLeft().x < other.bottomRight().x &&
+          this.topLeft().y < other.bottomRight().y
+        )
+      );
+    }
   }
 }

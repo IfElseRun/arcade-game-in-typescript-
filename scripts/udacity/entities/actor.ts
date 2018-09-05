@@ -41,30 +41,7 @@ namespace udacity.entities{
     *@param other Other actor to compare position
     */
     public isInCollision(other: actor): boolean {
-      this.position.composeSpaceMatrix()
-      other.position.composeSpaceMatrix()
-      let result: boolean = false;
-      let current: number = 0;
-      let min: number = 0;
-      let max: number = other.position.spaceMatrix.length - 1;
-      for(var i = 0; i < this.position.spaceMatrix.length && !result; i++){
-        let thisCurrent: number = this.position.spaceMatrix[i];
-        while(current <= max){
-          current = (min + max) / 2;
-          if(current < 0){
-            current = 0;
-          }
-          if(other.position.spaceMatrix[current] < thisCurrent) {
-            min = current + 1;
-          } else if(other.position.spaceMatrix[current] > thisCurrent) {
-            max = current - 1;
-          } else {
-            result = true;
-            break;
-          }
-        }
-      }
-      return result;
+      return this.position.inCollision(other.position) || other.position.inCollision(this.position);
     };
 
     /**
