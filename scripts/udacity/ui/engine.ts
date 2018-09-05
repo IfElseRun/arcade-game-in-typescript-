@@ -133,7 +133,7 @@ namespace udacity.ui {
               canvas.canvas.width,
               canvas.canvas.height
             ),
-            positionBuffer: 70
+            positionBuffer: 60
           })
         }));
       });
@@ -145,9 +145,9 @@ namespace udacity.ui {
           basePosition: position,
           boundary: new udacity.entities.position(
             canvas.canvas.width,
-            canvas.canvas.height
+            canvas.canvas.height - 20
           ),
-          positionBuffer: 80
+          positionBuffer: 65
         })
       });
     }

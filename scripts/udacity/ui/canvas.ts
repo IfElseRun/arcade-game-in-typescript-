@@ -27,14 +27,15 @@ namespace udacity.ui.canvas {
 
         engine.hero.lives--;
         if(engine.hero.lives == 0){
-          engine.stopGame = true;
-          alert('You have no more lives left! Your final score was ' + engine.hero.points + ' points!');
+          engine.stopGame = !confirm('You have no more lives left! Play again?');
+          engine.init();
         }
       };
 
       engine.onHeroSuccess = () => {
         engine.heroReset();
-        engine.hero.points += 10;
+        engine.stopGame = !confirm('Congratulations you won the game! Play again?');
+        engine.init();
       }
 
       bindControls();
