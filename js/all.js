@@ -35,13 +35,14 @@ var udacity;
                         canvas_1.engine.heroReset();
                         canvas_1.engine.hero.lives--;
                         if (canvas_1.engine.hero.lives == 0) {
-                            canvas_1.engine.stopGame = true;
-                            alert('You have no more lives left! Your final score was ' + canvas_1.engine.hero.points + ' points!');
+                            canvas_1.engine.stopGame = !confirm('You have no more lives left! Play again?');
+                            canvas_1.engine.init();
                         }
                     };
                     canvas_1.engine.onHeroSuccess = () => {
                         canvas_1.engine.heroReset();
-                        canvas_1.engine.hero.points += 10;
+                        canvas_1.engine.stopGame = !confirm('Congratulations you won the game! Play again?');
+                        canvas_1.engine.init();
                     };
                     bindControls();
                     postResourceLoad();
@@ -173,10 +174,10 @@ var udacity;
                 }
             }
             composeSpaceMatrix() {
-                this.spaceMatrix = {};
+                this.spaceMatrix = new Array();
                 for (let row = 0; row <= this.positionBuffer; row++) {
                     for (let column = 0; column <= this.positionBuffer; column++) {
-                        this.spaceMatrix[(this.y + row).toString() + ',' + (this.x + column).toString()] = true;
+                        this.spaceMatrix.push(parseFloat((this.y + row).toString() + '.' + (this.x + column).toString()));
                     }
                 }
                 return this.spaceMatrix;
@@ -201,6 +202,37 @@ var udacity;
             }
             willBeOutOfBounds(pos) {
                 return this.x + pos.x >= this.boundary.x || this.y + pos.y >= this.boundary.y;
+            }
+            topLeft() {
+                return this;
+            }
+            topRight() {
+                return new entities.position(this.x + this.positionBuffer, this.y);
+            }
+            bottomLeft() {
+                return new entities.position(this.x, this.y + this.positionBuffer);
+            }
+            bottomRight() {
+                return new entities.position(this.x + this.positionBuffer, this.y + this.positionBuffer);
+            }
+            inCollision(other) {
+                return ((this.topLeft().x < other.topLeft().x &&
+                    this.topLeft().y < other.topLeft().y
+                    &&
+                        this.bottomRight().x > other.topLeft().x &&
+                    this.bottomRight().y > other.topLeft().y) || (this.topRight().x > other.topRight().x &&
+                    this.topRight().y < other.topRight().y
+                    &&
+                        this.bottomLeft().x < other.topRight().x &&
+                    this.bottomLeft().y > other.topRight().y) || (this.bottomLeft().x < other.bottomLeft().x &&
+                    this.bottomLeft().y > other.bottomLeft().y
+                    &&
+                        this.topRight().x > other.bottomLeft().x &&
+                    this.topRight().y < other.bottomLeft().y) || (this.bottomRight().x > other.bottomRight().x &&
+                    this.bottomRight().y > other.bottomRight().y
+                    &&
+                        this.topLeft().x < other.bottomRight().x &&
+                    this.topLeft().y < other.bottomRight().y));
             }
         }
         entities.actorPosition = actorPosition;
@@ -235,16 +267,7 @@ var udacity;
                 });
             }
             isInCollision(other) {
-                this.position.composeSpaceMatrix();
-                other.position.composeSpaceMatrix();
-                let result = false;
-                for (let key in this.position.spaceMatrix) {
-                    if (other.position.spaceMatrix[key] !== undefined) {
-                        result = true;
-                        break;
-                    }
-                }
-                return result;
+                return this.position.inCollision(other.position) || other.position.inCollision(this.position);
             }
             ;
             render(context) {
@@ -498,7 +521,7 @@ var udacity;
             renderText() {
                 ui.canvas.context.font = '20px serif';
                 ui.canvas.context.clearRect(0, 0, ui.canvas.canvas.width, 50);
-                ui.canvas.context.fillText('You have ' + this.hero.lives.toString() + ' lives left!         You have ' + this.hero.points.toString() + ' points!', 10, 43);
+                ui.canvas.context.fillText('You have ' + this.hero.lives.toString() + ' lives left! ' , 10, 43);
             }
             renderEnemies(enemyStartCoordinates = new Array()) {
                 this.enemies = new Array();
@@ -508,7 +531,7 @@ var udacity;
                         position: new udacity.entities.actorPosition({
                             basePosition: enemyPosition,
                             boundary: new udacity.entities.position(ui.canvas.canvas.width, ui.canvas.canvas.height),
-                            positionBuffer: 70
+                            positionBuffer: 60
                         })
                     }));
                 });
@@ -517,8 +540,8 @@ var udacity;
                 this.hero = new udacity.entities.hero({
                     position: new udacity.entities.actorPosition({
                         basePosition: position,
-                        boundary: new udacity.entities.position(ui.canvas.canvas.width, ui.canvas.canvas.height),
-                        positionBuffer: 80
+                        boundary: new udacity.entities.position(ui.canvas.canvas.width, ui.canvas.canvas.height - 20),
+                        positionBuffer: 65
                     })
                 });
             }
